@@ -1,0 +1,5 @@
+{
+  "transform": {
+    "\\.m?js$": "jest-esm-transformer"
+  }
+}

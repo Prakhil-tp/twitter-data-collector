@@ -1,0 +1,19 @@
+{
+  "name": "twitter-api-workaround",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node -r esm index.js",
+    "test": "jest --watchAll"
+  },
+  "dependencies": {
+    "esm": "^3.2.25",
+    "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.3",
+    "jest": "^26.1.0",
+    "jest-esm-transformer": "^1.0.0"
+  }
+}
