@@ -1,4 +1,5 @@
-import twitter from "./twitterService";
+import twitter from "./services/twitter";
+import Sheet from "./services/spreadsheets";
 import locations from "./helpers/locations";
 import parser from "./helpers/parser";
 
@@ -15,8 +16,11 @@ import parser from "./helpers/parser";
     // tweets.forEach((tweet) => {
     // console.log(tweet.text);
     // });
-    console.log(JSON.stringify(tweets, undefined, 2));
-    // console.log(JSON.stringify(data, undefined, 2));
+    // console.log(JSON.stringify(tweets, undefined, 2));
+    console.log(JSON.stringify(data[0].trends, undefined, 2));
+
+    const sheet = await Sheet();
+    sheet.addRows(data[0].trends);
   } catch (e) {
     console.log(e);
   }
