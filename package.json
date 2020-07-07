@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "esm": "^3.2.25",
+    "google-spreadsheet": "^3.0.11",
     "twit": "^2.2.11"
   },
   "devDependencies": {
