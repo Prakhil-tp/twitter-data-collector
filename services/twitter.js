@@ -1,4 +1,4 @@
-import config from "./config.json";
+import config from "../config.json";
 import Twit from "twit";
 
 const T = new Twit(config);
