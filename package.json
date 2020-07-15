@@ -10,6 +10,8 @@
   "dependencies": {
     "esm": "^3.2.25",
     "google-spreadsheet": "^3.0.11",
+    "moment": "^2.27.0",
+    "query-string": "^6.13.1",
     "twit": "^2.2.11"
   },
   "devDependencies": {
