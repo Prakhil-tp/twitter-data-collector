@@ -1,26 +1,52 @@
 import twitter from "./services/twitter";
 import Sheet from "./services/spreadsheets";
 import locations from "./helpers/locations";
-import parser from "./helpers/parser";
+import {
+  sortByRetweets,
+  getFilteredTrends,
+  getCleanedTweets
+} from "./helpers/trendsHelper";
 
 (async () => {
   try {
+    const trendLimit = 30;
+    const minTweetVolume = 1000;
+    const displayTweetCount = 5;
+    const tweetLimit = 500;
+    const isIgnorePromotedContent = true;
+    const isIgnoreTextTrend = false;
+
     const locationId = locations.getWOEID("india");
-    const data = await twitter.getTrends(locationId);
-    const queries = parser.parseTopFiveQueries(data);
+    const totalTrends = await twitter.getTrends(locationId);
+    const trends = getFilteredTrends(
+      totalTrends,
+      trendLimit,
+      minTweetVolume,
+      isIgnorePromotedContent,
+      isIgnoreTextTrend
+    );
 
-    const tweetsData = await twitter.getTweets(queries[0]);
-    const tweets = tweetsData && tweetsData.statuses;
+    // fetch tweets of every trends. [[...tweets],[...tweets]]
+    const trendsAndTweets = await Promise.all(
+      trends.map(async (trend) => {
+        const tweetList = await twitter.getTweets(
+          trend.query,
+          tweetLimit
+        );
+        const sortedTweets = sortByRetweets(tweetList);
+        const shortTweetList = sortedTweets.slice(
+          0,
+          displayTweetCount - 1
+        );
+        const cleanedTweets = getCleanedTweets(shortTweetList, trend);
+        return cleanedTweets;
+      })
+    );
 
-    // console.log(tweets);
-    // tweets.forEach((tweet) => {
-    // console.log(tweet.text);
-    // });
-    // console.log(JSON.stringify(tweets, undefined, 2));
-    console.log(JSON.stringify(data[0].trends, undefined, 2));
+    const mergedTweets = [].concat.apply([], trendsAndTweets);
 
     const sheet = await Sheet();
-    sheet.addRows(data[0].trends);
+    sheet.addRows(mergedTweets);
   } catch (e) {
     console.log(e);
   }
