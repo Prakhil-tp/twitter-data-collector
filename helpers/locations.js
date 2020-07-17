@@ -41,7 +41,6 @@ const getWOEID = (countryName, townName = "") => {
           location.parentid === country.woeid
       );
       if (town) return town.woeid;
-      throw Error(`town ${townName} doesn't exist.`);
     }
     if (country) return country.woeid;
     throw Error(`country ${countryName} doesn't exist.`);
