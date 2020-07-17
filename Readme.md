@@ -1,4 +1,4 @@
-# Twitter API Workaround
+# Twitter data collector
 
 A serverless function which fetches the current trends and tweets from Twitter API, and write it to google sheets.
 
