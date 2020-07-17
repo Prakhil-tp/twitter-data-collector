@@ -7,6 +7,10 @@ import {
   getCleanedTweets
 } from "./helpers/trendsHelper";
 
+/**
+ * Immediately Invoked function expression (IIFE)
+ * Trigger point
+ */
 (async () => {
   try {
     const trendLimit = 30;
@@ -26,7 +30,10 @@ import {
       isIgnoreTextTrend
     );
 
-    // fetch tweets of every trends. [[...tweets],[...tweets]]
+    /**
+     * Fetch tweets of every trends.
+     * returns [[...tweets],[...tweets]]
+     */
     const trendsAndTweets = await Promise.all(
       trends.map(async (trend) => {
         const tweetList = await twitter.getTweets(

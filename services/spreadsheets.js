@@ -16,7 +16,7 @@ export default async function () {
   const sheet = doc.sheetsByIndex[0];
 
   /**
-   * function to add rows to the sheet.
+   * function to add tweets to the sheet.
    * @function addRows
    * @param {Array<object>} tweets - Array of tweets
    * @returns {void}
