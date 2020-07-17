@@ -13,14 +13,21 @@ import {
  */
 (async () => {
   try {
-    const trendLimit = 30;
-    const minTweetVolume = 1000;
-    const displayTweetCount = 5;
-    const tweetLimit = 500;
-    const isIgnorePromotedContent = true;
-    const isIgnoreTextTrend = false;
+    const sheet = await Sheet();
+    const controls = await sheet.fetchControlParams();
 
-    const locationId = locations.getWOEID("india");
+    const {
+      MaxNoOfTrends: trendLimit,
+      MinTweetVolume: minTweetVolume,
+      MaxTweetsPerTrend: displayTweetCount,
+      MaxTweetsToBeAnalyzed: tweetLimit,
+      TrendCountry: trendCountry,
+      TrendCity: trendCity,
+      IgnorePromotedContent: isIgnorePromotedContent,
+      IgnoreTextTrend: isIgnoreTextTrend
+    } = controls;
+
+    const locationId = locations.getWOEID(trendCountry, trendCity);
     const totalTrends = await twitter.getTrends(locationId);
     const trends = getFilteredTrends(
       totalTrends,
@@ -49,10 +56,8 @@ import {
         return cleanedTweets;
       })
     );
-
     const mergedTweets = [].concat.apply([], trendsAndTweets);
 
-    const sheet = await Sheet();
     sheet.addRows(mergedTweets);
   } catch (e) {
     console.log(e);

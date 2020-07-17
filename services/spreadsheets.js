@@ -3,6 +3,14 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import creds from "../client_secret.json";
 
 /**
+ * Helper function to make delay for rate limited APIs.
+ * @function delay
+ * @param {number} interval
+ */
+const delay = (interval) =>
+  new Promise((resolve) => setTimeout(resolve, interval));
+
+/**
  * Closure which serves functions related to sheet actions.
  * @returns {object} - object of functions
  */
@@ -13,7 +21,31 @@ export default async function () {
   await doc.useServiceAccountAuth(creds);
   await doc.loadInfo();
   console.log(`Sheet title: ${doc.title}`);
-  const sheet = doc.sheetsByIndex[0];
+
+  /**
+   * function to fetch params from the control sheet.
+   * @function fetchControlParams
+   * @returns {Array<object>} returns control key value pairs.
+   */
+  const fetchControlParams = async () => {
+    const sheet = doc.sheetsByIndex[1];
+    const rows = await sheet.getRows();
+    const controls = {};
+    rows.forEach(({ CONTROL, VALUE }) => {
+      if (isNaN(VALUE)) {
+        if (
+          CONTROL === "IgnorePromotedContent" ||
+          CONTROL === "IgnoreTextTrend"
+        ) {
+          VALUE = VALUE === "t" ? true : false;
+        }
+        controls[CONTROL] = VALUE;
+        return;
+      }
+      controls[CONTROL] = parseInt(VALUE);
+    });
+    return controls;
+  };
 
   /**
    * function to add tweets to the sheet.
@@ -22,6 +54,7 @@ export default async function () {
    * @returns {void}
    */
   const addRows = async (tweets) => {
+    const sheet = doc.sheetsByIndex[0];
     const now = moment();
     const date = now.format("DD/MM/YYYY");
     const time = now.format("HHmm");
@@ -37,6 +70,7 @@ export default async function () {
         retweetCount
       } = tweet;
 
+      await delay(20);
       await sheet.addRow({
         "Date (dd/mm/yyyy)": date,
         "Time (hhmm - 24hr format)": time,
@@ -51,5 +85,5 @@ export default async function () {
     }
   };
 
-  return { addRows };
+  return { addRows, fetchControlParams };
 }
