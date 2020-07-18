@@ -52,8 +52,7 @@ import {
           0,
           displayTweetCount - 1
         );
-        const cleanedTweets = getCleanedTweets(shortTweetList, trend);
-        return cleanedTweets;
+        return getCleanedTweets(shortTweetList, trend);
       })
     );
     const mergedTweets = [].concat.apply([], trendsAndTweets);
