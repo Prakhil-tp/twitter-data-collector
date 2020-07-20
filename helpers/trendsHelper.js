@@ -73,7 +73,16 @@ const getCleanedTweets = (tweets, trend) => {
       created_at: tweetTime,
       text: tweetText,
       retweet_count: retweetCount,
-      user: { screen_name: username, followers_count: followersCount }
+      user: {
+        screen_name: username,
+        followers_count: followersCount
+      },
+      retweeted_status: {
+        user: {
+          screen_name: originator,
+          followers_count: originatorFollowersCount
+        }
+      } = { user: { screen_name: "", followers_count: "" } }
     } = tweet;
 
     return {
@@ -83,9 +92,42 @@ const getCleanedTweets = (tweets, trend) => {
       tweetText,
       username,
       followersCount,
+      originator,
+      originatorFollowersCount,
       retweetCount
     };
   });
 };
 
-export { sortByRetweets, getFilteredTrends, getCleanedTweets };
+/**
+ * Helper function to get only one retweet from the original tweet.
+ * @function getUniqueShortTweetList
+ * @param {Array<object>} tweets - tweets & retweets (sorted By retweets)
+ * @param {number} limit - number of tweets to return.
+ * @returns {Array<object>} - Single tweet from an originator.
+ */
+const getUniqueShortTweetList = (tweets, limit) => {
+  const blackList = [];
+  const uniqueTweets = [];
+
+  tweets.forEach((tweet) => {
+    const { retweeted_status } = tweet;
+
+    if (retweeted_status) {
+      const isInBlacklist = blackList.some((originalTweetId) => {
+        return retweeted_status.id === originalTweetId;
+      });
+      if (isInBlacklist) return;
+      blackList.push(retweeted_status.id);
+    }
+    uniqueTweets.push(tweet);
+  });
+  return uniqueTweets.slice(0, limit - 1);
+};
+
+export {
+  sortByRetweets,
+  getFilteredTrends,
+  getCleanedTweets,
+  getUniqueShortTweetList
+};

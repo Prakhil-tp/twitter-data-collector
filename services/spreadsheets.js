@@ -1,14 +1,7 @@
 import moment from "moment";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import creds from "../client_secret.json";
-
-/**
- * Helper function to make delay for rate limited APIs.
- * @function delay
- * @param {number} interval
- */
-const delay = (interval) =>
-  new Promise((resolve) => setTimeout(resolve, interval));
+import { delay } from "../helpers/apiHelper";
 
 /**
  * Closure which serves functions related to sheet actions.
@@ -67,7 +60,9 @@ export default async function () {
         tweetText,
         username,
         followersCount,
-        retweetCount
+        retweetCount,
+        originator,
+        originatorFollowersCount
       } = tweet;
 
       await delay(20);
@@ -78,8 +73,10 @@ export default async function () {
         "Trend Hashtag": trendHashtag,
         "Tweet Volume": tweetVolume,
         "Tweet Text": tweetText,
-        "Tweet Originator": username,
-        "Tweet Originator follower count": followersCount,
+        Tweeter: username,
+        "Tweeter follower count": followersCount,
+        "Tweet Originator": originator,
+        "Tweet Originator follower count": originatorFollowersCount,
         "Retweet Count": retweetCount
       });
     }

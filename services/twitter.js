@@ -1,6 +1,7 @@
 import queryString from "query-string";
 import config from "../config.json";
 import Twit from "twit";
+import { delay } from "../helpers/apiHelper";
 
 const T = new Twit(config);
 
@@ -44,33 +45,30 @@ const fetchTweets = (params) => {
  * @returns {Promise} - Resolved value : Array of tweets
  */
 const getTweets = async (query, maxTweetCount = 100) => {
-  return new Promise((resolve, reject) => {
-    try {
-      let tweetsToFetch = maxTweetCount;
-      let params = { q: query, count: 100 };
-      const tweets = [];
+  try {
+    let tweetsToFetch = maxTweetCount;
+    let params = { q: query, count: 100 };
+    const tweets = [];
 
-      // Recursive function to fetch paginated tweets
-      const trigger = async () => {
-        const tweetData = await fetchTweets(params);
-        if (tweetData.statuses.length && tweetsToFetch > 0) {
-          tweets.push(...tweetData.statuses);
-          tweetsToFetch -= tweetData.statuses.length;
+    while (tweetsToFetch > 0) {
+      const tweetData = await fetchTweets(params);
+      if (tweetData.statuses.length) {
+        tweets.push(...tweetData.statuses);
+        tweetsToFetch -= tweetData.statuses.length; // decrementing tweetsToFetch with every iteration tweets length.
 
-          const nextFetchQuery = queryString.parse(
-            tweetData.search_metadata.next_results
-          );
+        const nextFetchQuery = queryString.parse(
+          tweetData.search_metadata.next_results
+        );
 
-          params.count = tweetsToFetch < 100 ? tweetsToFetch : 100;
-          params.max_id = nextFetchQuery.max_id;
-          trigger();
-        } else resolve(tweets);
-      };
-      trigger();
-    } catch (e) {
-      reject(e);
+        params.count = tweetsToFetch < 100 ? tweetsToFetch : 100;
+        params.max_id = nextFetchQuery.max_id;
+      } else break;
+      await delay(10); // delay in milliseconds.
     }
-  });
+    return tweets;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export default {
