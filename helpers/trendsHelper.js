@@ -107,22 +107,61 @@ const getCleanedTweets = (tweets, trend) => {
  * @returns {Array<object>} - Single tweet from an originator.
  */
 const getUniqueShortTweetList = (tweets, limit) => {
-  const blackList = [];
-  const uniqueTweets = [];
+  let blackList = [];
+  let uniqueTweets = [];
+
+  /* function to check whether tweet id is in blacklist
+   * and also followers count lower than parameter.
+   */
+  const isInBlackList = (originalTweetId, followers_count) => {
+    return (
+      !!blackList.length &&
+      blackList.some(
+        (item) =>
+          originalTweetId === item.originalTweetId &&
+          followers_count <= item.tweeterFollowerCount
+      )
+    );
+  };
 
   tweets.forEach((tweet) => {
-    const { retweeted_status } = tweet;
+    const {
+      retweeted_status,
+      quoted_status,
+      user: { followers_count }
+    } = tweet;
 
-    if (retweeted_status) {
-      const isInBlacklist = blackList.some((originalTweetId) => {
-        return retweeted_status.id === originalTweetId;
+    if (retweeted_status || quoted_status) {
+      const originalTweetId = retweeted_status
+        ? retweeted_status.id
+        : quoted_status.id;
+
+      if (isInBlackList(originalTweetId, followers_count)) return;
+
+      // Remove previous entry and add new one.
+      blackList = blackList.filter((item) => {
+        return item.originalTweetId !== originalTweetId;
       });
-      if (isInBlacklist) return;
-      blackList.push(retweeted_status.id);
+      blackList.push({
+        originalTweetId,
+        tweeterFollowerCount: followers_count
+      });
+
+      uniqueTweets = uniqueTweets.filter(
+        ({ retweeted_status, quoted_status }) => {
+          if (retweeted_status || quoted_status) {
+            const id = retweeted_status
+              ? retweeted_status.id
+              : quoted_status.id;
+            return id !== originalTweetId;
+          }
+          return true;
+        }
+      );
     }
     uniqueTweets.push(tweet);
   });
-  return uniqueTweets.slice(0, limit - 1);
+  return uniqueTweets.slice(0, limit);
 };
 
 export {
