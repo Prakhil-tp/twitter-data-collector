@@ -1,4 +1,4 @@
-import locations from "./locations";
+import locations from "../locations";
 
 describe("titleCase", () => {
   test("throw an error if called without argument", () => {
