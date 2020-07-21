@@ -1,8 +1,21 @@
+import dotenv from "dotenv";
 import queryString from "query-string";
-import config from "../config.json";
 import Twit from "twit";
 
-const T = new Twit(config);
+dotenv.config();
+const {
+  TWITTER_CONSUMER_KEY,
+  TWITTER_CONSUMER_SECRET,
+  TWITTER_ACCESS_TOKEN,
+  TWITTER_ACCESS_TOKEN_SECRET
+} = process.env;
+
+const T = new Twit({
+  consumer_key: TWITTER_CONSUMER_KEY,
+  consumer_secret: TWITTER_CONSUMER_SECRET,
+  access_token: TWITTER_ACCESS_TOKEN,
+  access_token_secret: TWITTER_ACCESS_TOKEN_SECRET
+});
 
 /**
  * Thenable function to retrieve twitter trends.
@@ -44,33 +57,29 @@ const fetchTweets = (params) => {
  * @returns {Promise} - Resolved value : Array of tweets
  */
 const getTweets = async (query, maxTweetCount = 100) => {
-  return new Promise((resolve, reject) => {
-    try {
-      let tweetsToFetch = maxTweetCount;
-      let params = { q: query, count: 100 };
-      const tweets = [];
+  try {
+    let tweetsToFetch = maxTweetCount;
+    let params = { q: query, count: 100 };
+    const tweets = [];
 
-      // Recursive function to fetch paginated tweets
-      const trigger = async () => {
-        const tweetData = await fetchTweets(params);
-        if (tweetData.statuses.length && tweetsToFetch > 0) {
-          tweets.push(...tweetData.statuses);
-          tweetsToFetch -= tweetData.statuses.length;
+    while (tweetsToFetch > 0) {
+      const tweetData = await fetchTweets(params);
+      if (tweetData.statuses.length) {
+        tweets.push(...tweetData.statuses);
+        tweetsToFetch -= tweetData.statuses.length; // Decrementing `tweetsToFetch` with tweets' length of every fetch.
 
-          const nextFetchQuery = queryString.parse(
-            tweetData.search_metadata.next_results
-          );
+        const nextFetchQuery = queryString.parse(
+          tweetData.search_metadata.next_results
+        );
 
-          params.count = tweetsToFetch < 100 ? tweetsToFetch : 100;
-          params.max_id = nextFetchQuery.max_id;
-          trigger();
-        } else resolve(tweets);
-      };
-      trigger();
-    } catch (e) {
-      reject(e);
+        params.count = tweetsToFetch < 100 ? tweetsToFetch : 100;
+        params.max_id = nextFetchQuery.max_id;
+      } else break;
     }
-  });
+    return tweets;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export default {

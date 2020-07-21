@@ -4,7 +4,8 @@ import locations from "./helpers/locations";
 import {
   sortByRetweets,
   getFilteredTrends,
-  getCleanedTweets
+  getCleanedTweets,
+  getUniqueShortTweetList
 } from "./helpers/trendsHelper";
 
 /**
@@ -41,6 +42,7 @@ import {
      * Fetch tweets of every trends.
      * returns [[...tweets],[...tweets]]
      */
+    console.log("start fetching tweets");
     const trendsAndTweets = await Promise.all(
       trends.map(async (trend) => {
         const tweetList = await twitter.getTweets(
@@ -48,12 +50,11 @@ import {
           tweetLimit
         );
         const sortedTweets = sortByRetweets(tweetList);
-        const shortTweetList = sortedTweets.slice(
-          0,
-          displayTweetCount - 1
+        const uniqueTweets = getUniqueShortTweetList(
+          sortedTweets,
+          displayTweetCount
         );
-        const cleanedTweets = getCleanedTweets(shortTweetList, trend);
-        return cleanedTweets;
+        return getCleanedTweets(uniqueTweets, trend);
       })
     );
     const mergedTweets = [].concat.apply([], trendsAndTweets);
