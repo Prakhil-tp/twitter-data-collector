@@ -1,7 +1,6 @@
 import queryString from "query-string";
 import config from "../config.json";
 import Twit from "twit";
-import { delay } from "../helpers/apiHelper";
 
 const T = new Twit(config);
 
@@ -54,7 +53,7 @@ const getTweets = async (query, maxTweetCount = 100) => {
       const tweetData = await fetchTweets(params);
       if (tweetData.statuses.length) {
         tweets.push(...tweetData.statuses);
-        tweetsToFetch -= tweetData.statuses.length; // decrementing tweetsToFetch with every iteration tweets length.
+        tweetsToFetch -= tweetData.statuses.length; // Decrementing `tweetsToFetch` with tweets' length of every fetch.
 
         const nextFetchQuery = queryString.parse(
           tweetData.search_metadata.next_results
@@ -63,7 +62,6 @@ const getTweets = async (query, maxTweetCount = 100) => {
         params.count = tweetsToFetch < 100 ? tweetsToFetch : 100;
         params.max_id = nextFetchQuery.max_id;
       } else break;
-      await delay(10); // delay in milliseconds.
     }
     return tweets;
   } catch (e) {
