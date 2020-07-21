@@ -1,8 +1,21 @@
+import dotenv from "dotenv";
 import queryString from "query-string";
-import config from "../config.json";
 import Twit from "twit";
 
-const T = new Twit(config);
+dotenv.config();
+const {
+  TWITTER_CONSUMER_KEY,
+  TWITTER_CONSUMER_SECRET,
+  TWITTER_ACCESS_TOKEN,
+  TWITTER_ACCESS_TOKEN_SECRET
+} = process.env;
+
+const T = new Twit({
+  consumer_key: TWITTER_CONSUMER_KEY,
+  consumer_secret: TWITTER_CONSUMER_SECRET,
+  access_token: TWITTER_ACCESS_TOKEN,
+  access_token_secret: TWITTER_ACCESS_TOKEN_SECRET
+});
 
 /**
  * Thenable function to retrieve twitter trends.

@@ -1,17 +1,27 @@
+import dotenv from "dotenv";
 import moment from "moment";
 import { GoogleSpreadsheet } from "google-spreadsheet";
-import creds from "../client_secret.json";
 import { delay } from "../helpers/apiHelper";
+
+dotenv.config();
 
 /**
  * Closure which serves functions related to sheet actions.
  * @returns {object} - object of functions
  */
 export default async function () {
-  const doc = new GoogleSpreadsheet(
-    "1Oo5udsp58zhR9vjMzyLXtj3vEPl4e_Csn_gaSJSe_EU"
-  );
-  await doc.useServiceAccountAuth(creds);
+  const {
+    GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    GOOGLE_PRIVATE_KEY,
+    GOOGLE_SHEET_ID
+  } = process.env;
+
+  const doc = new GoogleSpreadsheet(GOOGLE_SHEET_ID);
+  await doc.useServiceAccountAuth({
+    client_email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    private_key: GOOGLE_PRIVATE_KEY
+  });
+
   await doc.loadInfo();
   console.log(`Sheet title: ${doc.title}`);
 

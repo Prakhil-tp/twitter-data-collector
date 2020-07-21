@@ -8,6 +8,7 @@
     "test": "jest --watchAll"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "google-spreadsheet": "^3.0.11",
     "moment": "^2.27.0",
