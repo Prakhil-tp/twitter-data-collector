@@ -3,3 +3,4 @@ config.json
 client_secret.json
 .vscode/
 .env
+*.log

@@ -2,8 +2,11 @@ import dotenv from "dotenv";
 import moment from "moment";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { delay } from "../helpers/apiHelper";
+import log from "node-file-logger";
+import options from "../logs/options.json";
 
 dotenv.config();
+log.SetUserOptions(options);
 
 /**
  * Closure which serves functions related to sheet actions.
@@ -31,23 +34,27 @@ export default async function () {
    * @returns {Array<object>} returns control key value pairs.
    */
   const fetchControlParams = async () => {
-    const sheet = doc.sheetsByIndex[1];
-    const rows = await sheet.getRows();
-    const controls = {};
-    rows.forEach(({ CONTROL, VALUE }) => {
-      if (isNaN(VALUE)) {
-        if (
-          CONTROL === "IgnorePromotedContent" ||
-          CONTROL === "IgnoreTextTrend"
-        ) {
-          VALUE = VALUE === "t" ? true : false;
+    try {
+      const sheet = doc.sheetsByIndex[1];
+      const rows = await sheet.getRows();
+      const controls = {};
+      rows.forEach(({ CONTROL, VALUE }) => {
+        if (isNaN(VALUE)) {
+          if (
+            CONTROL === "IgnorePromotedContent" ||
+            CONTROL === "IgnoreTextTrend"
+          ) {
+            VALUE = VALUE === "t" ? true : false;
+          }
+          controls[CONTROL] = VALUE;
+          return;
         }
-        controls[CONTROL] = VALUE;
-        return;
-      }
-      controls[CONTROL] = parseInt(VALUE);
-    });
-    return controls;
+        controls[CONTROL] = parseInt(VALUE);
+      });
+      return controls;
+    } catch (e) {
+      log.Fatal(e.message, "spreadsheets", "fetchControlParams", e);
+    }
   };
 
   /**
@@ -57,38 +64,42 @@ export default async function () {
    * @returns {void}
    */
   const addRows = async (tweets) => {
-    const sheet = doc.sheetsByIndex[0];
-    const now = moment();
-    const date = now.format("DD/MM/YYYY");
-    const time = now.format("HHmm");
+    try {
+      const sheet = doc.sheetsByIndex[0];
+      const now = moment();
+      const date = now.format("DD/MM/YYYY");
+      const time = now.format("HHmm");
 
-    for (let tweet of tweets) {
-      const {
-        tweetTime,
-        trendHashtag,
-        tweetVolume,
-        tweetText,
-        username,
-        followersCount,
-        retweetCount,
-        originator,
-        originatorFollowersCount
-      } = tweet;
+      for (let tweet of tweets) {
+        const {
+          tweetTime,
+          trendHashtag,
+          tweetVolume,
+          tweetText,
+          username,
+          followersCount,
+          retweetCount,
+          originator,
+          originatorFollowersCount
+        } = tweet;
 
-      await delay(20);
-      await sheet.addRow({
-        "Date (dd/mm/yyyy)": date,
-        "Time (hhmm - 24hr format)": time,
-        "Tweet Time": tweetTime,
-        "Trend Hashtag": trendHashtag,
-        "Tweet Volume": tweetVolume,
-        "Tweet Text": tweetText,
-        Tweeter: username,
-        "Tweeter follower count": followersCount,
-        "Tweet Originator": originator,
-        "Tweet Originator follower count": originatorFollowersCount,
-        "Retweet Count": retweetCount
-      });
+        await delay(20);
+        await sheet.addRow({
+          "Date (dd/mm/yyyy)": date,
+          "Time (hhmm - 24hr format)": time,
+          "Tweet Time": tweetTime,
+          "Trend Hashtag": trendHashtag,
+          "Tweet Volume": tweetVolume,
+          "Tweet Text": tweetText,
+          Tweeter: username,
+          "Tweeter follower count": followersCount,
+          "Tweet Originator": originator,
+          "Tweet Originator follower count": originatorFollowersCount,
+          "Retweet Count": retweetCount
+        });
+      }
+    } catch (e) {
+      log.Fatal(e.message, "spreadsheets", "addRows", e);
     }
   };
 

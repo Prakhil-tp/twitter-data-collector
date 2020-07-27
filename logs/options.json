@@ -1,0 +1,10 @@
+{
+  "folderPath": "./logs/",
+  "dateBasedFileNaming": false,
+  "fileName": "All_Logs",
+
+  "dateFormat": "YYYY-MM-DD",
+  "timeFormat": "HH:mm:ss.SSS",
+  "logLevel": "prod",
+  "onlyFileLogging": true
+}
