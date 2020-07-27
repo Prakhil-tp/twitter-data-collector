@@ -2686,7 +2686,14 @@ mixin-deep@^1.2.0:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
 
-moment@^2.27.0:
+moment-timezone@^0.5.14:
+  version "0.5.31"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.31.tgz#9c40d8c5026f0c7ab46eda3d63e49c155148de05"
+  integrity sha512-+GgHNg8xRhMXfEbv81iDtrVeTcWt0kWmTEY1XQK14dICTXnWJnT0dxdlPspwqF3keKMVPXwayEsk1DI0AA/jdA==
+  dependencies:
+    moment ">= 2.9.0"
+
+"moment@>= 2.9.0", moment@^2.20.1, moment@^2.27.0:
   version "2.27.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==
@@ -2733,6 +2740,15 @@ node-fetch@^2.3.0:
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
 
+node-file-logger@^0.9.5:
+  version "0.9.5"
+  resolved "https://registry.yarnpkg.com/node-file-logger/-/node-file-logger-0.9.5.tgz#39bb578dd727830d784b0ae44863964ff1397c8e"
+  integrity sha1-ObtXjdcngw14SwrkSGOWT/E5fI4=
+  dependencies:
+    moment "^2.20.1"
+    moment-timezone "^0.5.14"
+    node-stringify "^0.2.1"
+
 node-forge@^0.9.0:
   version "0.9.1"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.9.1.tgz#775368e6846558ab6676858a4d8c6e8d16c677b5"
@@ -2759,6 +2775,11 @@ node-notifier@^7.0.0:
     shellwords "^0.1.1"
     uuid "^7.0.3"
     which "^2.0.2"
+
+node-stringify@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/node-stringify/-/node-stringify-0.2.1.tgz#aee4addb89702861c004b6848ec22fbc0b01f46e"
+  integrity sha512-EdzBiPO2hmQOpG8eZtJmBK0bAWPTdla2GAU4Tb7fztLkAiMEYcJAHWvC/4FI8E9ZOxB1zmoAJpM6upTQ54xNDw==
 
 normalize-package-data@^2.5.0:
   version "2.5.0"
