@@ -7,12 +7,17 @@ import {
   getCleanedTweets,
   getUniqueShortTweetList
 } from "./helpers/trendsHelper";
+import log from "node-file-logger";
+import options from "./logs/options.json";
 
 /**
  * Immediately Invoked function expression (IIFE)
  * Trigger point
  */
 (async () => {
+  log.SetUserOptions(options);
+  log.Info("Script started!");
+
   try {
     const sheet = await Sheet();
     const controls = await sheet.fetchControlParams();
@@ -42,7 +47,6 @@ import {
      * Fetch tweets of every trends.
      * returns [[...tweets],[...tweets]]
      */
-    console.log("start fetching tweets");
     const trendsAndTweets = await Promise.all(
       trends.map(async (trend) => {
         const tweetList = await twitter.getTweets(
@@ -60,7 +64,8 @@ import {
     const mergedTweets = [].concat.apply([], trendsAndTweets);
 
     sheet.addRows(mergedTweets);
+    log.Info("Done!");
   } catch (e) {
-    console.log(e);
+    log.Fatal(e.message, "index.js", null, JSON.stringify(e));
   }
 })();

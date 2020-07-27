@@ -1,8 +1,12 @@
 import dotenv from "dotenv";
 import queryString from "query-string";
 import Twit from "twit";
+import log from "node-file-logger";
+import options from "../logs/options.json";
 
 dotenv.config();
+log.SetUserOptions(options);
+
 const {
   TWITTER_CONSUMER_KEY,
   TWITTER_CONSUMER_SECRET,
@@ -26,7 +30,10 @@ const T = new Twit({
 const getTrends = (id) => {
   return new Promise((resolve, reject) => {
     T.get("trends/place", { id }, (err, data) => {
-      if (err) reject(err);
+      if (err) {
+        log.Error(err.message, "twitterService", "getTrends", err);
+        reject(err);
+      }
       if (data && data.length && data[0].trends) {
         resolve(data[0].trends);
       } else resolve([]);
@@ -43,8 +50,10 @@ const getTrends = (id) => {
 const fetchTweets = (params) => {
   return new Promise((res, rej) => {
     T.get("search/tweets", params, (err, data) => {
-      if (err) rej(err);
-      else res(data);
+      if (err) {
+        log.Error(err.message, "twitterService", "fetchTweets", err);
+        rej(err);
+      } else res(data);
     });
   });
 };
@@ -78,7 +87,7 @@ const getTweets = async (query, maxTweetCount = 100) => {
     }
     return tweets;
   } catch (e) {
-    console.log(e);
+    log.Fatal(e.message, "twitterService", "getTweets", e);
   }
 };
 
