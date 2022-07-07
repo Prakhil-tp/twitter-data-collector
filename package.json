@@ -11,7 +11,7 @@
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "google-spreadsheet": "^3.0.11",
-    "moment": "^2.27.0",
+    "moment": "^2.29.4",
     "node-file-logger": "^0.9.5",
     "query-string": "^6.13.1",
     "twit": "^2.2.11"
